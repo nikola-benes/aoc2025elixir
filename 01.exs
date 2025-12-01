@@ -19,5 +19,5 @@ bool_to_int = fn true -> 1; false -> 0 end
     {new_state, part1 + to_zero, part2 + clicks}
   end
 
-IO.puts("#{part1}")
-IO.puts("#{part2}")
+IO.puts(part1)
+IO.puts(part2)
