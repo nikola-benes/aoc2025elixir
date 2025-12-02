@@ -1,48 +1,41 @@
-# Part 1: Try to be clever instead of brute force
-
-bool_to_int = fn true -> 1; false -> 0 end
+# Try to be clever in both parts
 
 divmod = fn x, y ->
   d = Integer.floor_div(x, y)
   {d, x - d * y}
 end
 
-gen_invalid = fn [from, to] ->
-  len = String.length(from)
-  to = String.to_integer(to)
-  {half_len, m} = divmod.(len, 2)
+gen_invalid = fn ft, r ->
+  from_s = hd(ft)
+  len = String.length(from_s)
+  [from, to] = Enum.map(ft, &String.to_integer/1)
+  {chunk_len, m} = divmod.(len, r)
 
-  if m == 1 do
-    Integer.pow(10, half_len)
+  if m != 0 do
+    Integer.pow(10, chunk_len)
   else
-    {fl, fr} = String.split_at(from, half_len)
-    String.to_integer(fl) + bool_to_int.(fl < fr)
+    String.slice(from_s, 0, chunk_len) |> String.to_integer
   end
   |> Stream.iterate(& &1 + 1)
-  |> Stream.map(fn x ->
-    s = to_string(x)
-    String.to_integer(s <> s)
-  end)
+  |> Stream.map(& to_string(&1) |> String.duplicate(r) |> String.to_integer)
+  |> Stream.drop_while(& &1 < from)
   |> Stream.take_while(& &1 <= to)
 end
 
-numbers =
+ranges =
   IO.read(:line)
   |> String.trim()
   |> String.split(["-", ","])
+  |> Stream.chunk_every(2)
 
-numbers
-|> Stream.chunk_every(2)
-|> Stream.flat_map(gen_invalid)
-|> Enum.sum
-|> IO.puts
+part1 = ranges |> Stream.flat_map(&gen_invalid.(&1, 2))
 
-# Part 2: Brute force
+part2 =
+  ranges
+  |> Stream.flat_map(fn [from, to] ->
+    2..String.length(to)
+    |> Stream.flat_map(&gen_invalid.([from, to], &1))
+    |> Stream.uniq
+  end)
 
-numbers
-|> Stream.map(&String.to_integer/1)
-|> Stream.chunk_every(2)
-|> Stream.flat_map(fn [a, b] -> a..b end)
-|> Stream.filter(& to_string(&1) =~ ~r/^(.*)(\1)+$/)
-|> Enum.sum
-|> IO.puts
+for p <- [part1, part2], do: p |> Enum.sum |> IO.puts
