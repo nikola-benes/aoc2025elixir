@@ -7,16 +7,18 @@ defmodule Day04 do
     removed =
       ns
       |> Stream.filter(fn {_, c} -> c < 4 end)
-      |> MapSet.new(fn {p, _} -> p end)
+      |> Enum.map(fn {p, _} -> p end)
+
+    ns = Map.drop(ns, removed)
 
     ns =
-      ns
-      |> Stream.filter(fn {p, _} -> p not in removed end)
-      |> Map.new(fn {p, c} ->
-        {p, c - Enum.count(n8(p), & &1 in removed)}
-      end)
+      removed
+      |> Stream.flat_map(&n8/1)
+      |> Stream.filter(&Map.has_key?(ns, &1))
+      |> Enum.frequencies
+      |> Map.merge(ns, fn _, r, c -> c - r end)
 
-    {MapSet.size(removed), ns}
+    {length(removed), ns}
   end
 
   def remove_all(ns, acc \\ 0) do
