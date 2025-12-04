@@ -4,10 +4,7 @@ defmodule Day04 do
   end
 
   def remove_once(ns) do
-    removed =
-      ns
-      |> Stream.filter(fn {_, c} -> c < 4 end)
-      |> Enum.map(fn {p, _} -> p end)
+    removed = for {p, c} <- ns, c < 4, do: p
 
     ns = Map.drop(ns, removed)
 
@@ -27,14 +24,14 @@ defmodule Day04 do
   end
 end
 
-rolls =
+tiles =
   IO.stream(:line)
   |> Stream.with_index
   |> Stream.flat_map(fn {line, y} ->
     line |> to_charlist |> Stream.with_index(fn c, x -> {{y, x}, c} end)
   end)
-  |> Stream.filter(fn {_, c} -> c == ?@ end)
-  |> MapSet.new(fn {p, _} -> p end)
+
+rolls = for {p, c} <- tiles, c == ?@, into: %MapSet{}, do: p
 
 ns =
   Map.new(
