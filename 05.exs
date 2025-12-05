@@ -8,6 +8,8 @@ defmodule Day05 do
   def join_ranges([]), do: []
 end
 
+import Aoc
+
 ranges =
   for line <- IO.stream(:line) |> Stream.take_while(& &1 != "\n") do
     [from, to] =
@@ -18,13 +20,13 @@ ranges =
   end
 
 IO.stream(:line)
-|> Stream.map(& &1 |> String.trim |> String.to_integer)
+~> (String.trim |> String.to_integer)
 |> Enum.count(fn i -> Enum.any?(ranges, & i in &1) end)
 |> IO.puts
 
 ranges
 |> Enum.sort_by(& &1.first)
 |> Day05.join_ranges
-|> Stream.map(&Range.size/1)
+~> Range.size
 |> Enum.sum
 |> IO.puts
