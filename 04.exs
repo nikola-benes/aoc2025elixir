@@ -31,7 +31,7 @@ tiles =
     line |> to_charlist |> Stream.with_index(fn c, x -> {{y, x}, c} end)
   end)
 
-rolls = for {p, c} <- tiles, c == ?@, into: %MapSet{}, do: p
+rolls = for {p, ?@} <- tiles, into: %MapSet{}, do: p
 
 ns =
   Map.new(

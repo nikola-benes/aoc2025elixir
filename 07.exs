@@ -3,8 +3,8 @@ start = IO.read(:line) |> to_charlist |> Enum.find_index(& &1 == ?S)
 IO.stream(:line)
 |> Enum.reduce({%{start => 1}, 0}, fn line, {beams, splits} ->
   splitters =
-    for {c, i} <- line |> to_charlist |> Stream.with_index,
-      c == ?^, into: %MapSet{}, do: i
+    for {?^, i} <- line |> to_charlist |> Stream.with_index,
+      into: %MapSet{}, do: i
 
   beams
   |> Enum.reduce({%{}, splits}, fn {i, c}, {beams, splits} ->

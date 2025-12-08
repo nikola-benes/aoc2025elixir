@@ -1,8 +1,7 @@
 start = IO.read(:line) |> to_charlist |> Enum.find_index(& &1 == ?S)
 
 for line <- IO.stream(:line),
-    {c, i} <- line |> to_charlist |> Stream.with_index,
-    c == ?^,
+    {?^, i} <- line |> to_charlist |> Stream.with_index,
     reduce: {%{start => 1}, 0} do
   {%{^i => c} = beams, splits} ->
     {
