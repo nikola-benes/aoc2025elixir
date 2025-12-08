@@ -1,3 +1,4 @@
+import Aoc
 alias DisjointSets, as: DS
 
 vertices =
@@ -15,18 +16,20 @@ edges =
   end
   |> Enum.sort_by(fn {_, _, d2} -> d2 end)
 
+{edges1, edges2} = Enum.split(edges, to_take)
+
 ds = DS.new(0..(size - 1))
 
-edges
-|> Stream.take(to_take)
+edges1
 |> Enum.reduce(ds, fn {a, b, _}, ds -> DS.union(ds, a, b) end)
+|> assign_to(ds)
 |> DS.all_sizes
 |> Enum.sort(:desc)
 |> Stream.take(3)
 |> Enum.product
 |> IO.puts
 
-edges
+edges2
 |> Enum.reduce_while(ds, fn {a, b, _}, ds ->
   if DS.only_one?(ds = DS.union(ds, a, b)) do
     {:halt, [a, b]}
