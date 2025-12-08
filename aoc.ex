@@ -5,6 +5,10 @@ defmodule Aoc do
     end
   end
 
+  defmacro assign_to(value, var) do
+    quote do: unquote(var) = unquote(value)
+  end
+
   def stream_chunk_only(e, f) when is_function(f, 1) do
     e |> Stream.chunk_by(f) |> Stream.filter(fn [x | _] -> f.(x) end)
   end
