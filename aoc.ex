@@ -1,7 +1,8 @@
 defmodule Aoc do
   defmacro e ~> f do
     quote do
-      unquote(e) |> Stream.map(fn x -> x |> unquote(f) end)
+      unquote(e)
+      |> Stream.map(fn x -> unquote(start_pipe(f, quote(do: x))) end)
     end
   end
 
@@ -11,6 +12,14 @@ defmodule Aoc do
 
   def stream_chunk_only(e, f) when is_function(f, 1) do
     e |> Stream.chunk_by(f) |> Stream.filter(fn [x | _] -> f.(x) end)
+  end
+
+  defp start_pipe({op, meta, [left, right]}, x) when op in [:|>, :~>] do
+    {op, meta, [start_pipe(left, x), right]}
+  end
+
+  defp start_pipe(other, x) do
+    quote do: unquote(x) |> unquote(other)
   end
 end
 
