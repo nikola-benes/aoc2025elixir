@@ -5,9 +5,17 @@ for line <- IO.stream(:line) do
 end
 |> assign_to(red)
 
+minmax = fn a, b -> if a < b, do: {a, b}, else: {b, a} end
+
+normalize = fn [[ax, ay], [bx, by]] ->
+  {l, r} = minmax.(ax, bx)
+  {t, b} = minmax.(ay, by)
+  {l, r, t, b}
+end
+
 for {[bx, by], b} <- red |> Stream.with_index |> Stream.drop(1),
      [ax, ay]     <- red |>                      Stream.take(b) do
-  {[[ax, ay], [bx, by]], (abs(ax - bx) + 1) * (abs(ay - by) + 1)}
+  {normalize.([[ax, ay], [bx, by]]), (abs(ax - bx) + 1) * (abs(ay - by) + 1)}
 end
 |> assign_to(boxes)
 ~> elem(1)
@@ -16,18 +24,16 @@ end
 
 # assumption: green lines never touch (true for my input)
 
-minmax = fn a, b -> if a < b, do: {a, b}, else: {b, a} end
+overlapping_insides? = fn {l1, r1, t1, b1}, {l2, r2, t2, b2} ->
+  [left, mid_left | _] = Enum.sort([l1, r1, l2, r2])
 
-overlapping_insides? = fn [[ax, ay], [bx, by]], [[cx, cy], [dx, dy]] ->
-  [left, mid_left | _] = Enum.sort([ax, bx, cx, dx])
+  [top, mid_top | _] = Enum.sort([t1, b1, t2, b2])
 
-  [top, mid_top | _] = Enum.sort([ay, by, cy, dy])
-
-  {left, mid_left} not in [minmax.(ax, bx), minmax.(cx, dx)] and
-    {top, mid_top} not in [minmax.(ay, by), minmax.(cy, dy)]
+  {left, mid_left} not in [{l1, r1}, {l2, r2}] and
+    {top, mid_top} not in [{t1, b1}, {t2, b2}]
 end
 
-lines = red |> Enum.chunk_every(2, 1, [hd(red)])
+lines = red |> Stream.chunk_every(2, 1, [hd(red)]) |> Enum.map(normalize)
 
 boxes
 |> Stream.reject(fn {box, _} ->
