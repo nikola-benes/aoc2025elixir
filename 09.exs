@@ -25,12 +25,7 @@ end
 # assumption: green lines never touch (true for my input)
 
 overlapping_insides? = fn {l1, r1, t1, b1}, {l2, r2, t2, b2} ->
-  [left, mid_left | _] = Enum.sort([l1, r1, l2, r2])
-
-  [top, mid_top | _] = Enum.sort([t1, b1, t2, b2])
-
-  {left, mid_left} not in [{l1, r1}, {l2, r2}] and
-    {top, mid_top} not in [{t1, b1}, {t2, b2}]
+  r1 > l2 and r2 > l1 and b1 > t2 and b2 > t1
 end
 
 lines = red |> Stream.chunk_every(2, 1, [hd(red)]) |> Enum.map(normalize)
