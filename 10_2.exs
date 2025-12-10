@@ -59,6 +59,6 @@ defmodule Day10 do
 end
 
 IO.stream(:line)
-~> Day10.solve
-|> Enum.sum
+|> Task.async_stream(&Day10.solve/1, ordered: false)
+|> Enum.sum_by(fn {:ok, r} -> r end)
 |> IO.puts
