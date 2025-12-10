@@ -17,9 +17,10 @@ for {[bx, by], b} <- red |> Stream.with_index |> Stream.drop(1),
      [ax, ay]     <- red |>                      Stream.take(b) do
   {normalize.([[ax, ay], [bx, by]]), (abs(ax - bx) + 1) * (abs(ay - by) + 1)}
 end
+|> List.keysort(1, :desc)
 |> assign_to(boxes)
-~> elem(1)
-|> Enum.max
+|> hd
+|> elem(1)
 |> IO.puts
 
 # assumption: green lines never touch (true for my input)
@@ -34,6 +35,6 @@ boxes
 |> Stream.reject(fn {box, _} ->
   Enum.any?(lines, &overlapping_insides?.(box, &1))
 end)
-~> elem(1)
-|> Enum.max
+|> Enum.at(0)
+|> elem(1)
 |> IO.puts
