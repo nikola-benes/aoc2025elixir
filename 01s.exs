@@ -1,7 +1,6 @@
-defmodule Day01 do
-  defp bool_to_int(true), do: 1
-  defp bool_to_int(false), do: 0
+import Aoc
 
+defmodule Day01 do
   def loop(state, part1, part2) do
     receive do
       {:rotate, val} ->

@@ -14,6 +14,9 @@ defmodule Aoc do
     e |> Stream.chunk_by(f) |> Stream.filter(fn [x | _] -> f.(x) end)
   end
 
+  def bool_to_int(true), do: 1
+  def bool_to_int(false), do: 0
+
   defp start_pipe({op, meta, [left, right]}, x) when op in [:|>, :~>] do
     {op, meta, [start_pipe(left, x), right]}
   end

@@ -1,4 +1,4 @@
-bool_to_int = fn true -> 1; false -> 0 end
+import Aoc
 
 {_, part1, part2} =
   for line <- IO.stream(:line), reduce: {50, 0, 0} do {state, part1, part2} ->
@@ -7,11 +7,11 @@ bool_to_int = fn true -> 1; false -> 0 end
     val = dir == ?L && -val || val
 
     new_state = Integer.mod(state + val, 100)
-    to_zero = bool_to_int.(new_state == 0)
+    to_zero = bool_to_int(new_state == 0)
 
     clicks = if val < 0 do
       z = abs(Integer.floor_div(state + val, 100))
-      z + to_zero - bool_to_int.(z > 0 and state == 0)
+      z + to_zero - bool_to_int(z > 0 and state == 0)
     else
       div(state + val, 100)
     end
