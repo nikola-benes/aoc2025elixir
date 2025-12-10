@@ -10,7 +10,7 @@ defmodule Day10 do
       |> String.replace(["[", "]"], "")
       |> to_charlist
       |> Enum.reverse
-      |> bools_to_int(& &1 == ?#)
+      |> Enum.reduce(0, fn c, acc -> (acc <<< 1) + bool_to_int(c == ?#) end)
 
     buttons =
       buttons
@@ -26,21 +26,13 @@ defmodule Day10 do
   end
 
   # Why the @#$% does the Bitwise module have bit operations for integers but
-  # not for bitstring?!
-
-  defp bools_to_int(bools) do
-    bools |> Enum.reduce(0, fn b, acc -> (acc <<< 1) + bool_to_int(b) end)
-  end
-
-  defp bools_to_int(bools, f) do
-    bools |> Stream.map(f) |> bools_to_int
-  end
+  # not for bitstrings?!
 
   defp bfs(goal, buttons, queue, seen, dist) do
     dist = dist + 1
 
     queue
-    |> Stream.flat_map(fn s -> buttons |> Stream.map(&bxor(&1, s)) end)
+    |> Stream.flat_map(fn s -> buttons ~> bxor(s) end)
     |> Enum.reduce_while({[], seen}, fn state, {next, seen} ->
       cond do
         state == goal -> {:halt, nil}
