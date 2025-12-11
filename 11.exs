@@ -44,7 +44,7 @@ IO.stream(:line)
 
 Day11.count_paths(graph, topo, "you", "out") |> IO.puts
 
-if "dac" in Enum.drop_while(topo, & &1 != "fft") do
+if Enum.find(topo, & &1 in ["dac", "fft"]) == "fft" do
   ["svr", "fft", "dac", "out"]
 else
   ["svr", "dac", "fft", "out"]
